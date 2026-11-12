@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090b16" />
+  <meta name="description" content="Kiki Code — رمزنگار و رمزگشای پیام با نمادهای اختصاصی" />
+  <title>Kiki Code | رمزنگار خصوصی متن</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
+    :root {
+      color-scheme: dark;
+      --bg: #080a13;
+      --panel: rgba(18, 22, 39, .88);
+      --panel-2: rgba(24, 29, 49, .82);
+      --line: rgba(154, 166, 207, .15);
+      --muted: #929ab5;
+      --text: #f4f5ff;
+      --purple: #a78bfa;
+      --pink: #f472b6;
+      --cyan: #67e8f9;
+      --good: #6ee7b7;
+      --bad: #fda4af;
+      --shadow: 0 24px 80px rgba(0,0,0,.38);
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(124,58,237,.20), transparent 34%),
+        radial-gradient(ellipse at 90% 35%, rgba(219,39,119,.13), transparent 32%),
+        radial-gradient(ellipse at 50% 100%, rgba(8,145,178,.10), transparent 38%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .16;
+      background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 42px 42px; mask-image: linear-gradient(to bottom, black, transparent 90%);
+    }
+    button, textarea, input { font: inherit; }
+    button { cursor: pointer; }
+    .page { position: relative; z-index: 1; width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 34px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 58px; }
+    .brand { display: flex; align-items: center; gap: 11px; direction: ltr; }
+    .brand-mark {
+      display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px;
+      color: #fff; font-size: 21px; font-weight: 900;
+      background: linear-gradient(135deg, #8b5cf6, #db2777);
+      box-shadow: 0 8px 28px rgba(168,85,247,.28);
+    }
+    .brand-name { font: 800 17px/1.1 'Vazirmatn', sans-serif; letter-spacing: .3px; }
+    .brand-sub { color: var(--muted); font: 500 10px/1.5 'Vazirmatn', sans-serif; letter-spacing: 1.2px; margin-top: 4px; }
+    .secure-pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); color: #c4c9dc; background: rgba(255,255,255,.035); border-radius: 999px; padding: 8px 13px; font-size: 11px; }
+    .secure-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); box-shadow: 0 0 12px var(--good); }
+    .hero { text-align: center; max-width: 720px; margin: 0 auto 34px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; color: #d8c7ff; border: 1px solid rgba(167,139,250,.23); background: rgba(139,92,246,.09); border-radius: 999px; font-size: 11px; margin-bottom: 15px; }
+    .eyebrow b { width: 6px; height: 6px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 10px var(--pink); }
+    h1 { margin: 0; font-size: clamp(30px, 5.3vw, 52px); line-height: 1.35; font-weight: 900; letter-spacing: -.8px; }
+    h1 span { background: linear-gradient(90deg, #c4b5fd 10%, #f0abfc 52%, #67e8f9 92%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p { margin: 12px auto 0; color: var(--muted); font-size: 14px; line-height: 2; max-width: 580px; }
+    .app-shell { border: 1px solid rgba(167,139,250,.18); border-radius: 26px; padding: 18px; background: linear-gradient(145deg, rgba(26,30,51,.92), rgba(12,15,27,.94)); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
+    .app-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 3px 4px 17px; border-bottom: 1px solid var(--line); margin-bottom: 17px; }
+    .app-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 14px; }
+    .app-title-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: #d8b4fe; background: rgba(168,85,247,.13); font-size: 16px; }
+    .session-info { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 11px; }
+    .logout { border: 0; padding: 6px 10px; border-radius: 8px; color: #f9a8d4; background: rgba(219,39,119,.10); font-size: 11px; }
+    .workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .work-card { min-width: 0; padding: 16px; background: rgba(255,255,255,.025); border: 1px solid var(--line); border-radius: 18px; }
+    .card-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .card-heading strong { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .step { display: grid; place-items: center; width: 23px; height: 23px; border-radius: 7px; color: #d8b4fe; background: rgba(168,85,247,.13); font: 700 11px 'Vazirmatn'; }
+    .hint { color: #7f88a5; font-size: 10px; }
+    textarea {
+      width: 100%; min-height: 220px; resize: vertical; outline: none; border-radius: 13px;
+      border: 1px solid rgba(154,166,207,.14); background: rgba(5,8,17,.58); color: var(--text);
+      padding: 14px; font-size: 13px; line-height: 2; transition: border-color .2s, box-shadow .2s;
+    }
+    textarea:focus { border-color: rgba(167,139,250,.55); box-shadow: 0 0 0 3px rgba(139,92,246,.09); }
+    textarea::placeholder { color: #69728e; }
+    #cipherText { direction: ltr; text-align: left; font-family: 'Vazirmatn', sans-serif; letter-spacing: 1.1px; overflow-wrap: anywhere; }
+    .counter { display: flex; justify-content: space-between; gap: 8px; color: #747d99; font-size: 10px; margin-top: 8px; }
+    .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 9px 13px; border: 1px solid transparent; border-radius: 11px; font-size: 11px; font-weight: 700; transition: transform .18s, filter .18s, background .18s; }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.09); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { flex: 1; color: #fff; background: linear-gradient(100deg, #7c3aed, #c02685); box-shadow: 0 7px 20px rgba(124,58,237,.18); }
+    .btn-cyan { color: #06131a; background: linear-gradient(100deg, #67e8f9, #a5f3fc); }
+    .btn-soft { color: #d6d9e8; background: rgba(255,255,255,.055); border-color: var(--line); }
+    .btn-clear { color: #a1a8bd; background: transparent; border-color: var(--line); }
+    .btn-icon { font-size: 15px; line-height: 1; }
+    .result-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; padding: 13px 15px; border-radius: 13px; border: 1px solid rgba(103,232,249,.13); background: rgba(8,145,178,.055); }
+    .result-text { color: #aab3cd; font-size: 11px; line-height: 1.8; }
+    .result-text b { color: #c4b5fd; font-weight: 700; }
+    .status { min-width: 90px; color: var(--cyan); font-size: 10px; text-align: left; }
+    .how { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 17px; }
+    .how-item { display: flex; align-items: flex-start; gap: 10px; padding: 13px; background: rgba(255,255,255,.025); border: 1px solid var(--line); border-radius: 13px; }
+    .how-icon { flex: 0 0 29px; display: grid; place-items: center; width: 29px; height: 29px; color: #d8b4fe; border-radius: 9px; background: rgba(168,85,247,.12); }
+    .how-item b { display: block; font-size: 11px; margin-bottom: 3px; }
+    .how-item span { display: block; color: var(--muted); font-size: 10px; line-height: 1.8; }
+    .footer { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 22px; color: #707994; font-size: 10px; }
+    .footer-mark { direction: ltr; letter-spacing: 1px; }
+    .warning { margin-top: 10px; color: #8d96b1; font-size: 10px; line-height: 1.9; text-align: center; }
+
+    /* Login */
+    .login-screen { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 20px; background: rgba(5,7,15,.86); backdrop-filter: blur(18px); }
+    .login-card { width: min(420px, 100%); padding: 30px; text-align: center; border: 1px solid rgba(167,139,250,.25); border-radius: 24px; background: linear-gradient(145deg, rgba(26,30,51,.98), rgba(11,14,26,.98)); box-shadow: 0 28px 100px rgba(0,0,0,.58); }
+    .login-logo { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto 17px; border-radius: 19px; color: white; font-size: 26px; font-weight: 900; background: linear-gradient(135deg, #8b5cf6, #db2777); box-shadow: 0 10px 32px rgba(168,85,247,.3); }
+    .login-card h2 { margin: 0; font-size: 22px; font-weight: 800; }
+    .login-card p { margin: 8px 0 22px; color: var(--muted); font-size: 12px; line-height: 1.9; }
+    .password-wrap { position: relative; }
+    .password-wrap input { width: 100%; height: 49px; border-radius: 12px; outline: none; border: 1px solid var(--line); background: rgba(4,7,16,.65); color: white; text-align: center; direction: ltr; padding: 0 14px; letter-spacing: 1px; }
+    .password-wrap input:focus { border-color: rgba(167,139,250,.7); box-shadow: 0 0 0 3px rgba(139,92,246,.1); }
+    .login-button { width: 100%; margin-top: 12px; min-height: 47px; border: 0; border-radius: 12px; color: white; font-weight: 800; font-size: 12px; background: linear-gradient(100deg, #7c3aed, #c02685); box-shadow: 0 8px 22px rgba(124,58,237,.2); }
+    .login-error { min-height: 20px; margin-top: 10px; color: var(--bad); font-size: 11px; }
+    .login-foot { margin-top: 14px; color: #6f7894; font-size: 9px; }
+    .toast { position: fixed; z-index: 20; left: 50%; bottom: 22px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 11px 17px; border-radius: 12px; border: 1px solid var(--line); color: #f4f5ff; background: #1b2034; box-shadow: 0 12px 40px rgba(0,0,0,.35); font-size: 11px; transition: .25s ease; white-space: nowrap; max-width: calc(100vw - 30px); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast.error { border-color: rgba(253,164,175,.35); }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 26px, 600px); padding-top: 18px; }
+      .topbar { margin-bottom: 39px; }
+      .workspace { grid-template-columns: 1fr; }
+      textarea { min-height: 170px; }
+      .how { grid-template-columns: 1fr; }
+      .app-shell { padding: 12px; border-radius: 20px; }
+      .work-card { padding: 13px; }
+      .footer { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 420px) {
+      .secure-pill { font-size: 9px; padding: 7px 9px; }
+      .brand-mark { width: 37px; height: 37px; }
+      .brand-name { font-size: 15px; }
+      .hero p { font-size: 12px; }
+      .app-head { align-items: flex-start; }
+      .session-info { flex-direction: column; align-items: flex-end; gap: 4px; }
+      .btn { flex: 1 1 auto; }
+      .btn-primary { flex-basis: 100%; }
+      .result-bar { align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div><div class="brand-name">KIKI CODE</div><div class="brand-sub">PRIVATE TEXT ENCODER</div></div>
+      </div>
+      <div class="secure-pill"><span class="secure-dot"></span> فضای رمزگذاری‌شده</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow"><b></b> پیام‌های شما، به زبان خودتان</div>
+      <h1>هر متنی را به <span>رمز اختصاصی</span> تبدیل کن</h1>
+      <p>پیامت را بنویس، رمز کن و برای دوستت بفرست. دوستت با ورود به Kiki Code و پیست‌کردن پیام، متن اصلی را می‌بیند.</p>
+    </section>
+
+    <section class="app-shell" aria-label="ابزار رمزنگاری متن">
+      <div class="app-head">
+        <div class="app-title"><span class="app-title-icon">⌘</span> پنل رمزنگار Kiki</div>
+        <div class="session-info"><span>دسترسی فعال است</span><button class="logout" id="logoutBtn" type="button">خروج از حساب ↗</button></div>
+      </div>
+
+      <div class="workspace">
+        <section class="work-card">
+          <div class="card-heading"><strong><span class="step">۰۱</span> متن اصلی</strong><span class="hint">پیام خودت را اینجا بنویس</span></div>
+          <textarea id="plainText" placeholder="مثلاً: سلام! این پیام فقط برای توئه..." spellcheck="false"></textarea>
+          <div class="counter"><span>متن قابل رمزگذاری</span><span id="plainCount">۰ کاراکتر</span></div>
+          <div class="actions">
+            <button class="btn btn-primary" id="encryptBtn" type="button"><span class="btn-icon">✧</span> رمزگذاری و تبدیل متن</button>
+            <button class="btn btn-clear" id="clearPlainBtn" type="button">پاک‌کردن</button>
+          </div>
+        </section>
+
+        <section class="work-card">
+          <div class="card-heading"><strong><span class="step">۰۲</span> پیام رمزگذاری‌شده</strong><span class="hint">برای ارسال یا رمزگشایی</span></div>
+          <textarea id="cipherText" placeholder="نمادهای رمز را اینجا پیست کن یا متن رمز‌شده را بساز..." spellcheck="false" autocapitalize="off"></textarea>
+          <div class="counter"><span>کد اختصاصی Kiki</span><span id="cipherCount">۰ نماد</span></div>
+          <div class="actions">
+            <button class="btn btn-cyan" id="decryptBtn" type="button"><span class="btn-icon">⌁</span> رمزگشایی پیام</button>
+            <button class="btn btn-soft" id="pasteBtn" type="button">⤓ پیست متن</button>
+            <button class="btn btn-soft" id="copyBtn" type="button">▣ کپی رمز</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="result-bar">
+        <div class="result-text"><b>چطور استفاده کنم؟</b><br />متن را رمز کن و کپی بگیر؛ گیرنده همین سایت را باز می‌کند، پیام را پیست می‌کند و دکمه رمزگشایی را می‌زند.</div>
+        <div class="status" id="statusText" aria-live="polite">آماده به کار</div>
+      </div>
+    </section>
+
+    <section class="how" aria-label="راهنمای استفاده">
+      <div class="how-item"><div class="how-icon">✎</div><div><b>۱. بنویس</b><span>متن دلخواهت را در کادر اول وارد کن.</span></div></div>
+      <div class="how-item"><div class="how-icon">✧</div><div><b>۲. رمز کن و بفرست</b><span>خروجی نمادین را کپی و برای دوستت ارسال کن.</span></div></div>
+      <div class="how-item"><div class="how-icon">⌁</div><div><b>۳. رمزگشایی کن</b><span>دوستت وارد سایت می‌شود، کد را پیست و رمزگشایی می‌کند.</span></div></div>
+    </section>
+
+    <p class="warning">نکته: برای رمزگذاری و رمزگشایی، هر دو نفر باید رمز ورود Kiki Code را داشته باشند.</p>
+    <footer class="footer"><span>پیام‌ها فقط در همین صفحه پردازش می‌شوند و جایی ذخیره یا ارسال نمی‌شوند.</span><span class="footer-mark">KIKI CODE · V1.0</span></footer>
+  </main>
+
+  <section class="login-screen" id="loginScreen" aria-label="ورود به Kiki Code">
+    <form class="login-card" id="loginForm">
+      <div class="login-logo">K</div>
+      <h2>ورود به Kiki Code</h2>
+      <p>برای ورود به فضای رمزنگاری، رمز اختصاصی را وارد کن.</p>
+      <div class="password-wrap"><input id="accessPassword" type="password" placeholder="رمز ورود اختصاصی" autocomplete="off" required /></div>
+      <button class="login-button" type="submit">ورود به سامانه <span aria-hidden="true">←</span></button>
+      <div class="login-error" id="loginError" aria-live="polite"></div>
+      <div class="login-foot">PRIVATE ACCESS · KIKI CODE</div>
+    </form>
+  </section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    'use strict';
+
+    // This is a client-side access gate, not server-side authentication.
+    const ACCESS_PASSWORD = 'kiki code 0110';
+    const KDF_ITERATIONS = 310000;
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    // 64 distinct geometric Unicode symbols map one-to-one to Base64URL characters.
+    const SYMBOLS = Array.from({ length: 64 }, (_, i) => String.fromCodePoint(0x25A0 + i));
+    const BASE64URL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    const toSymbol = new Map([...BASE64URL].map((char, i) => [char, SYMBOLS[i]]));
+    const fromSymbol = new Map(SYMBOLS.map((char, i) => [char, BASE64URL[i]]));
+
+    const $ = (id) => document.getElementById(id);
+    const loginScreen = $('loginScreen');
+    const loginForm = $('loginForm');
+    const loginError = $('loginError');
+    const passwordInput = $('accessPassword');
+    const plainText = $('plainText');
+    const cipherText = $('cipherText');
+    const statusText = $('statusText');
+    const toast = $('toast');
+    let sessionPassword = '';
+    let toastTimer = null;
+
+    function showToast(message, isError = false) {
+      toast.textContent = message;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    function setStatus(message, isError = false) {
+      statusText.textContent = message;
+      statusText.style.color = isError ? 'var(--bad)' : 'var(--cyan)';
+    }
+
+    function updateCounters() {
+      $('plainCount').textContent = `${plainText.value.length.toLocaleString('fa-IR')} کاراکتر`;
+      $('cipherCount').textContent = `${[...cipherText.value].filter(ch => fromSymbol.has(ch)).length.toLocaleString('fa-IR')} نماد`;
+    }
+
+    function bytesToBase64Url(bytes) {
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+      }
+      return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    function base64UrlToBytes(value) {
+      const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+      const binary = atob(padded);
+      return Uint8Array.from(binary, char => char.charCodeAt(0));
+    }
+
+    function bytesToSymbols(bytes) {
+      const encoded = bytesToBase64Url(bytes);
+      const symbols = [...encoded].map(char => toSymbol.get(char)).join('');
+      // Grouping is only visual; the decoder ignores all whitespace.
+      return '⟦KIKI-1⟧\n' + symbols.match(/.{1,48}/gu).join('\n');
+    }
+
+    function symbolsToBytes(text) {
+      const cleaned = text.replace('⟦KIKI-1⟧', '').replace(/\s+/gu, '');
+      if (!cleaned) throw new Error('EMPTY');
+      let encoded = '';
+      for (const symbol of [...cleaned]) {
+        const char = fromSymbol.get(symbol);
+        if (!char) throw new Error('INVALID_SYMBOL');
+        encoded += char;
+      }
+      return base64UrlToBytes(encoded);
+    }
+
+    async function deriveAesKey(password, salt) {
+      const material = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: KDF_ITERATIONS, hash: 'SHA-256' },
+        material,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    async function encryptMessage(message) {
+      if (!window.crypto?.subtle) throw new Error('NO_CRYPTO');
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveAesKey(sessionPassword, salt);
+      const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoder.encode(message)));
+      const payload = new Uint8Array(1 + salt.length + iv.length + encrypted.length);
+      payload[0] = 1; // format version
+      payload.set(salt, 1);
+      payload.set(iv, 17);
+      payload.set(encrypted, 29);
+      return bytesToSymbols(payload);
+    }
+
+    async function decryptMessage(symbols) {
+      if (!window.crypto?.subtle) throw new Error('NO_CRYPTO');
+      const payload = symbolsToBytes(symbols);
+      if (payload.length < 46 || payload[0] !== 1) throw new Error('BAD_FORMAT');
+      const salt = payload.slice(1, 17);
+      const iv = payload.slice(17, 29);
+      const encrypted = payload.slice(29);
+      const key = await deriveAesKey(sessionPassword, salt);
+      const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
+      return decoder.decode(plain);
+    }
+
+    loginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (passwordInput.value === ACCESS_PASSWORD) {
+        sessionPassword = passwordInput.value;
+        loginError.textContent = '';
+        passwordInput.value = '';
+        loginScreen.hidden = true;
+        plainText.focus();
+        showToast('ورود موفقیت‌آمیز بود؛ خوش آمدی.');
+      } else {
+        loginError.textContent = 'رمز ورود صحیح نیست. دوباره تلاش کن.';
+        passwordInput.select();
+      }
+    });
+
+    $('logoutBtn').addEventListener('click', () => {
+      sessionPassword = '';
+      plainText.value = '';
+      cipherText.value = '';
+      updateCounters();
+      setStatus('قفل شد');
+      loginScreen.hidden = false;
+      passwordInput.value = '';
+      loginError.textContent = '';
+      passwordInput.focus();
+    });
+
+    $('encryptBtn').addEventListener('click', async () => {
+      const message = plainText.value;
+      if (!message.trim()) return showToast('اول متن دلخواهت را وارد کن.', true);
+      const button = $('encryptBtn');
+      button.disabled = true;
+      button.textContent = 'در حال رمزگذاری...';
+      try {
+        cipherText.value = await encryptMessage(message);
+        updateCounters();
+        setStatus('رمزگذاری انجام شد');
+        showToast('پیام با موفقیت رمزگذاری شد.');
+      } catch (error) {
+        console.error(error);
+        showToast(error.message === 'NO_CRYPTO' ? 'برای رمزگذاری، صفحه را با HTTPS یا localhost باز کن.' : 'رمزگذاری انجام نشد.', true);
+        setStatus('خطا در رمزگذاری', true);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<span class="btn-icon">✧</span> رمزگذاری و تبدیل متن';
+      }
+    });
+
+    $('decryptBtn').addEventListener('click', async () => {
+      if (!cipherText.value.trim()) return showToast('ابتدا متن رمز‌شده را پیست کن.', true);
+      const button = $('decryptBtn');
+      button.disabled = true;
+      button.textContent = 'در حال رمزگشایی...';
+      try {
+        plainText.value = await decryptMessage(cipherText.value);
+        updateCounters();
+        setStatus('رمزگشایی انجام شد');
+        showToast('پیام اصلی با موفقیت بازیابی شد.');
+      } catch (error) {
+        console.error(error);
+        const message = error.message === 'INVALID_SYMBOL' ? 'این متن، کد معتبر Kiki نیست.' :
+          error.message === 'EMPTY' ? 'متن رمز‌شده خالی است.' :
+          error.message === 'BAD_FORMAT' ? 'ساختار کد معتبر نیست یا نسخه آن پشتیبانی نمی‌شود.' :
+          error.name === 'OperationError' ? 'رمزگشایی ناموفق بود؛ کد ناقص است یا رمز ورود یکسان نیست.' :
+          error.message === 'NO_CRYPTO' ? 'برای رمزگشایی، صفحه را با HTTPS یا localhost باز کن.' : 'رمزگشایی انجام نشد.';
+        showToast(message, true);
+        setStatus('رمزگشایی ناموفق', true);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<span class="btn-icon">⌁</span> رمزگشایی پیام';
+      }
+    });
+
+    $('copyBtn').addEventListener('click', async () => {
+      if (!cipherText.value) return showToast('متنی برای کپی‌کردن وجود ندارد.', true);
+      try {
+        await navigator.clipboard.writeText(cipherText.value);
+        showToast('کد رمز‌شده کپی شد؛ آماده ارسال است.');
+        setStatus('کپی شد');
+      } catch (error) {
+        cipherText.focus(); cipherText.select();
+        showToast('دسترسی کلیپ‌بورد محدود است؛ با Ctrl+C کپی کن.', true);
+      }
+    });
+
+    $('pasteBtn').addEventListener('click', async () => {
+      try {
+        const pasted = await navigator.clipboard.readText();
+        if (!pasted) return showToast('کلیپ‌بورد خالی است.', true);
+        cipherText.value = pasted;
+        updateCounters();
+        setStatus('متن پیست شد');
+        showToast('متن رمز‌شده وارد شد؛ حالا رمزگشایی کن.');
+      } catch (error) {
+        cipherText.focus();
+        showToast('اجازه پیست خودکار داده نشد؛ داخل کادر کلیک کن و Ctrl+V بزن.', true);
+      }
+    });
+
+    $('clearPlainBtn').addEventListener('click', () => {
+      plainText.value = '';
+      updateCounters();
+      plainText.focus();
+      setStatus('متن اصلی پاک شد');
+    });
+
+    plainText.addEventListener('input', updateCounters);
+    cipherText.addEventListener('input', updateCounters);
+
+    if (!window.isSecureContext || !window.crypto?.subtle) {
+      setStatus('نیازمند HTTPS یا localhost', true);
+    }
+    updateCounters();
+  </script>
+</body>
+</html>
